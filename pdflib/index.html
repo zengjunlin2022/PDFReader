@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pdflib</title>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  </head>
+  <body>
+    <script>
+      // Load a PDFDocument without updating its existing metadata
+      let init = async () => {
+        let url =
+          "https://zengjunlin2022.github.io/PDFReader/pdf/newDailyRoute2020.pdf";
+        let res = await fetch(url);
+        if (res.status == 200) {
+          let existingPdfBytes = res.arrayBuffer();
+          const pdfDoc = await PDFDocument.load(existingPdfBytes);
+          const viewerPrefs = pdfDoc.catalog.getOrCreateViewerPreferences();
+        }
+      };
+
+      init();
+    </script>
+  </body>
+</html>
