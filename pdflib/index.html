@@ -6,22 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pdflib</title>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body>
     <script>
       // Load a PDFDocument without updating its existing metadata
       let init = async () => {
-        let url =
-          "https://zengjunlin2022.github.io/PDFReader/pdf/newDailyRoute2020.pdf";
-        let res = await fetch(url);
-        if (res.status == 200) {
-          let existingPdfBytes = res.arrayBuffer();
-          const pdfDoc = await PDFDocument.load(existingPdfBytes);
-          const viewerPrefs = pdfDoc.catalog.getOrCreateViewerPreferences();
+        let queryString = window.location.search.replace("?", "");
+        let params = parseQueryString(queryString);
+        if (!params.file) {
+          return;
         }
+        let res = await fetch(params.file, {
+          method: "get",
+          responseType: "blob",
+        });
+        if (res.status == 200) {
+          let existingPdfBytes = await res.arrayBuffer();
+          const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+          const viewerPrefs = pdfDoc.catalog.getOrCreateViewerPreferences();
+          renderInIframe(existingPdfBytes);
+        }
+      };
+      const renderInIframe = (pdfBytes) => {
+        const blob = new Blob([pdfBytes], { type: "application/pdf" });
+        const blobUrl = URL.createObjectURL(blob);
+        document.getElementById("iframe").src = blobUrl;
+      };
+
+      const parseQueryString = (query) => {
+        var parts = query.split("&");
+        var params = Object.create(null);
+
+        for (var i = 0, ii = parts.length; i < ii; ++i) {
+          var param = parts[i].split("=");
+          var key = param[0].toLowerCase();
+          var value = param.length > 1 ? param[1] : null;
+          params[decodeURIComponent(key)] = decodeURIComponent(value);
+        }
+
+        return params;
       };
 
       init();
     </script>
+    <iframe
+      id="iframe"
+      src=""
+      frameborder="0"
+      width="100%"
+      height="100%"
+    ></iframe>
   </body>
 </html>
