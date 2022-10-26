@@ -1,2 +1,0 @@
-# PDFReader
-PDFjs
